@@ -306,3 +306,197 @@ Ejecucion de la clase principal, Juego
 Se observa que la salida es la esperada para este sprint 2, se muestra gestión de objetos y la integración de acertijos
 
 ## SPRINT 3: Refinamiento del juego y aplicación de métricas
+### Tareas de refinamiento:
+* Refactoriza el código para reducir el acoplamiento.  
+* Analiza y aplica métricas de acoplamiento (Ce, Ca, CF) para mejorar el diseño.  
+* Mejora las mecánicas del juego basándose en la retroalimentación de las pruebas.
+### Tareas:
+Refactorización para bajo acoplamiento:  
+* Asegura que cada clase tenga dependencias mínimas con otras.  
+* Calcula y documenta las métricas Ce, Ca y CF.  
+### Toques finales:
+* Añade acertijos y objetos finales.  
+* Mejora la retroalimentación del usuario y la narrativa del juego.  
+### Enfoque TDD:
+Escribe pruebas adicionales para cubrir las nuevas características añadidas y el código refactorizado.  
+### Salida:
+Diseño del juego mejorado con métricas de acoplamiento más bajas.  
+Juego finalizado con una narrativa completa y mecánicas funcionales.  
+
+Para este 3er sprint, escribi 4 tests
+``` java
+// SPRINT 3
+    // Test para el final del juego
+    @Test
+    public void elJuegoHaTerminadoCuandoEncuentraElObjetivoFinalTest(){
+        // Arrange
+        Juego juego = new Juego();
+        juego.setObjetivoFinal("llave dorada");
+        Objeto obj = new Objeto();
+        obj.setNombre("llave dorada");
+        Jugador jugador = new Jugador();
+        jugador.recogerObjeto(obj);
+        // Act
+        boolean resultado = jugador.encontroObjetivoFinal(juego.getObjetivoFinal());
+        // Assert
+        assertEquals(true, resultado, "Deberia devolver true");
+    }
+    @Test
+    public void elJuegoNoHaTerminadoCuandoNoEncuentraElObjetivoFinalTest(){
+        // Arrange
+        Juego juego = new Juego();
+        juego.setObjetivoFinal("llave dorada");
+        Objeto obj = new Objeto();
+        obj.setNombre("pocion");
+        Jugador jugador = new Jugador();
+        jugador.recogerObjeto(obj);
+        // Act
+        boolean resultado = jugador.encontroObjetivoFinal(juego.getObjetivoFinal());
+        // Assert
+        assertEquals(false, resultado, "Deberia devolver false");
+    }
+    @Test
+    public void elJuegoHaTerminadoCuandoCompletaLaMisionPrincipalTest(){
+        // Arrange
+        Juego juego = new Juego();
+        juego.setMisionPrincipal("Resolver 3 acertijos");
+        Jugador jugador = new Jugador();
+        String pregunta = "¿Qué tiene un ojo pero no puede ver?";
+        String respuesta = "ahuja";
+        Acertijo acertijo = new Acertijo(pregunta, respuesta);
+        String respuesta_jugador = "ahuja";
+        jugador.resolverAcertijo(acertijo, respuesta_jugador);
+
+        pregunta = "¿Qué se moja mientras seca?";
+        respuesta = "toalla";
+        acertijo = new Acertijo(pregunta, respuesta);
+        respuesta_jugador = "toalla";
+        jugador.resolverAcertijo(acertijo, respuesta_jugador);
+
+        pregunta = "Soy alto cuando soy joven, y soy bajo cuando soy viejo. ¿Qué soy?";
+        respuesta = "vela";
+        acertijo = new Acertijo(pregunta, respuesta);
+        respuesta_jugador = "vela";
+        jugador.resolverAcertijo(acertijo, respuesta_jugador);
+        // Act
+        boolean resultado = jugador.completoMisionPrincipal();
+        // Assert
+        assertEquals(true, resultado, "Deberia devolver true");
+    }
+    @Test
+    public void elJuegoNoHaTerminadoCuandoNoCompletaLaMisionPrincipalTest(){
+        // Arrange
+        Juego juego = new Juego();
+        juego.setMisionPrincipal("Resolver 3 acertijos");
+        Jugador jugador = new Jugador();
+        String pregunta = "¿Qué tiene un ojo pero no puede ver?";
+        String respuesta = "ahuja";
+        Acertijo acertijo = new Acertijo(pregunta, respuesta);
+        String respuesta_jugador = "pulpo";
+        jugador.resolverAcertijo(acertijo, respuesta_jugador);
+
+        pregunta = "¿Qué se moja mientras seca?";
+        respuesta = "toalla";
+        acertijo = new Acertijo(pregunta, respuesta);
+        respuesta_jugador = "toalla";
+        jugador.resolverAcertijo(acertijo, respuesta_jugador);
+
+        pregunta = "Soy alto cuando soy joven, y soy bajo cuando soy viejo. ¿Qué soy?";
+        respuesta = "vela";
+        acertijo = new Acertijo(pregunta, respuesta);
+        respuesta_jugador = "vela";
+        jugador.resolverAcertijo(acertijo, respuesta_jugador);
+        // Act
+        boolean resultado = jugador.completoMisionPrincipal();
+        // Assert
+        assertEquals(false, resultado, "Deberia devolver false");
+    }
+```
+![Sprint3CapturaPruebasFallidas](Image/Sprint3CapturaPruebasFallidas.png)  
+En la imagen se observa que dichos tests no pasaron (estan color rojo) debido a que aun no se han implementado los nuevos metodos. Ahora escribo codigo necesario para que pasen dichos tests.  
+
+![Sprint3CapturaPruebasExitosas](Image/Sprint3CapturaPruebasExitosas.png)   
+Como se observa en la imagen, los 4 tests pasaron exitosamente (estan color verde).  
+
+Ejecucion de la clase principal, Juego  
+![Sprint3Captura1EjecucionMain](Image/Sprint3Captura1EjecucionMain.png)  
+![Sprint3Captura2EjecucionMain](Image/Sprint3Captura2EjecucionMain.png)  
+Se observa el flujo del juego. Puse una variable llamada iteraciones para controlar las cantidad de veces que itera el bucle while, en caso llegue a la cantidad de iteraciones (4 en el codigo), entonces el jugador encuentra el objetivo final y gana el juego. Otra forma de ganar es que complete la mision principal (adivinar 3 acertijos)
+
+Calculo del factor de acoplamiento:
+``` java
+package org.example;
+
+public class CalculoFactorDeAcoplamiento {
+    public static void main(String[] args) {
+        /*
+        Juego
+        Habitacion
+        Jugador
+        Objeto
+        Acertijo
+        */
+        Module juego = new Module("Juego");
+        Module habitacion = new Module("Habitacion");
+        Module jugador = new Module("Jugador");
+        Module objeto = new Module("Objeto");
+        Module acertijo = new Module("Acertijo");
+
+        juego.addDependency(juego);
+        juego.addDependency(habitacion);
+        juego.addDependency(jugador);
+        juego.addDependency(objeto);
+        juego.addDependency(acertijo);
+
+        jugador.addDependency(objeto);
+        jugador.addDependency(acertijo);
+        Module[] modules = {juego,habitacion,jugador,objeto,acertijo};
+
+        int totalDependencies = 0;
+        for (Module module : modules) {
+            totalDependencies += module.getDependencies().size();
+        }
+
+        int totalModules = modules.length;
+
+        double factor_acoplamiento = (double) totalDependencies / (totalModules * (totalModules - 1));
+        System.out.println("Factor de acoplamiento: " + factor_acoplamiento);
+    }
+}
+```
+``` java
+package org.example;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class Module {
+    private String name;
+    private Set<Module> dependencies;
+
+    public Module(String name) {
+        this.name = name;
+        this.dependencies = new HashSet<>();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void addDependency(Module module) {
+        dependencies.add(module);
+    }
+
+    public Set<Module> getDependencies() {
+        return dependencies;
+    }
+}
+```
+![Sprint3CapturaFactorAcoplamiento](Image/Sprint3CapturaFactorAcoplamiento.png)  
+Se observa que el factor de acoplamiento es 0.35, y dado que el factor de acoplamiento varia entre 0 y 1, entonces este valor (0.35) es bajo, por lo tanto tiene mayor modularidad y mantenibilidad.  
+
+Calculo del Acoplamiento aferente (Ca) y eferente (Ce) para cada una de las clases (Juego, Habitacion, Jugador, Objeto, Acertijo)  
+![Sprint3CapturaCaYCe](Image/Sprint3CapturaCaYCe.png)  
+Se observa la cantidad de clases externas que utilizan cierta clase (ca) y la cantidad de clases externas que son utilizadas por cierta clase (ce)
+
+
